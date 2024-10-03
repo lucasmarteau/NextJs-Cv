@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import ChatBubble from './ChatBubble';
 
 export default function Chatbot() {
@@ -6,51 +6,60 @@ export default function Chatbot() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchChatResponse = async (query) => {
+    const fetchChatResponse = useCallback(async (query) => {
         setLoading(true);
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to fetch response from API: ${errorData.error || 'Unknown error'}`);
-        }
-
-        const data = await response.json();
-        setLoading(false);
-        return data.result; // Renvoie le texte généré
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const userMessage = { role: 'user', content: input };
-        setMessages((prevMessages) => [...prevMessages, userMessage]);
-        setInput('');
-
         try {
-            const assistantMessageContent = await fetchChatResponse(input);
-            console.log('Message de l\'assistant:', assistantMessageContent);
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query }),
+            });
 
-            // Vérifie si le contenu est pertinent
-            if (assistantMessageContent && assistantMessageContent.trim().length > 0) {
-                const assistantMessage = { role: 'assistant', content: assistantMessageContent };
-                setMessages((prevMessages) => [...prevMessages, assistantMessage]);
-            } else {
-                // Réessayer avec une question reformulée
-                const reformulatedMessage = "Peux-tu me dire combien font 1 + 1 ?";
-                const newAssistantMessageContent = await fetchChatResponse(reformulatedMessage);
-                const newAssistantMessage = { role: 'assistant', content: newAssistantMessageContent || "Désolé, je n'ai toujours pas compris." };
-                setMessages((prevMessages) => [...prevMessages, newAssistantMessage]);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Unknown error');
             }
+
+            const data = await response.json();
+            return data.result;
         } catch (error) {
             console.error('Error during API call:', error);
+            return null;
+        } finally {
+            setLoading(false);
         }
-    };
+    }, []);
+
+    const addMessage = useCallback((role, content) => {
+        if (content?.trim()) {
+            setMessages((prevMessages) => [...prevMessages, { role, content }]);
+        }
+    }, []);
+
+    const handleSubmit = useCallback(async (event) => {
+        event.preventDefault();
+
+        const trimmedInput = input.trim();
+        if (!trimmedInput) return;
+
+        // Ajouter le message utilisateur
+        addMessage('user', trimmedInput);
+        setInput('');
+
+        // Récupérer la réponse de l'assistant
+        let assistantMessageContent = await fetchChatResponse(trimmedInput);
+
+        // Si la réponse est vide, reformuler la question
+        if (!assistantMessageContent?.trim()) {
+            const reformulatedMessage = "Peux-tu me dire combien font 1 + 1 ?";
+            assistantMessageContent = await fetchChatResponse(reformulatedMessage);
+        }
+
+        // Ajouter le message de l'assistant
+        addMessage('assistant', assistantMessageContent || "Désolé, je n'ai toujours pas compris.");
+    }, [input, fetchChatResponse, addMessage]);
 
     return (
         <div className="chat-container">
@@ -58,16 +67,16 @@ export default function Chatbot() {
                 {messages.map((msg, index) => (
                     <ChatBubble key={index} message={msg.content} role={msg.role} />
                 ))}
-                {loading && <p>Loading...</p>} {/* Affiche un indicateur de chargement */}
+                {loading && <p>Loading...</p>}
             </div>
             <form onSubmit={handleSubmit} className="input-form">
-        <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Posez une question..."
-            rows="2"
-            required
-        />
+                <textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Posez une question..."
+                    rows="2"
+                    required
+                />
                 <button type="submit" disabled={!input.trim()}>Envoyer</button>
             </form>
         </div>
