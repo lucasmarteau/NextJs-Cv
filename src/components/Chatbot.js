@@ -23,7 +23,7 @@ export default function Chatbot() {
 
         const data = await response.json();
         setLoading(false);
-        return data.result;
+        return data.result; // Renvoie le texte généré
     };
 
     const handleSubmit = async (event) => {
@@ -34,8 +34,16 @@ export default function Chatbot() {
 
         try {
             const assistantMessageContent = await fetchChatResponse(input);
-            const assistantMessage = { role: 'assistant', content: assistantMessageContent };
-            setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+            console.log('Message de l\'assistant:', assistantMessageContent);
+
+            // Vérifie si le contenu est pertinent
+            if (assistantMessageContent && assistantMessageContent.trim().length > 0) {
+                const assistantMessage = { role: 'assistant', content: assistantMessageContent };
+                setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+            } else {
+                const errorMessage = { role: 'assistant', content: "Désolé, je n'ai pas compris la réponse." };
+                setMessages((prevMessages) => [...prevMessages, errorMessage]);
+            }
         } catch (error) {
             console.error('Error during API call:', error);
         }
@@ -47,7 +55,7 @@ export default function Chatbot() {
                 {messages.map((msg, index) => (
                     <ChatBubble key={index} message={msg.content} role={msg.role} />
                 ))}
-                {loading && <p>Loading...</p>}
+                {loading && <p>Loading...</p>} {/* Affiche un indicateur de chargement */}
             </div>
             <form onSubmit={handleSubmit} className="input-form">
         <textarea

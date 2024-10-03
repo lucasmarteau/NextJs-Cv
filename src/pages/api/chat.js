@@ -22,7 +22,8 @@ export default async function handler(req, res) {
             }
 
             const data = await response.json();
-            res.status(200).json({ result: data.generated_text });
+            console.log('Réponse de l\'API:', data); // Pour déboguer
+            res.status(200).json({ result: data.generated_text || 'Aucune réponse' });
         } catch (error) {
             console.error('API call error:', error);
             res.status(500).json({ error: error.message });
