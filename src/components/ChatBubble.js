@@ -1,7 +1,14 @@
-export default function ChatBubble({ message, role }) {
+import PropTypes from 'prop-types';
+
+export default function ChatBubble({ message = "Aucune réponse", role }) {
     return (
         <div className={`chat-bubble ${role}`}>
-            {message || "Aucune réponse"} {/* Affiche un message par défaut si rien n'est présent */}
+            {message}
         </div>
     );
 }
+
+ChatBubble.propTypes = {
+    message: PropTypes.string,
+    role: PropTypes.oneOf(['user', 'assistant']).isRequired,
+};

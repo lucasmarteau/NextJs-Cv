@@ -1,11 +1,15 @@
 import Chatbot from '../components/Chatbot';
-import ThreeScene from '../components/ThreeScene';
+import { Suspense, lazy } from 'react';
+
+const ThreeScene = lazy(() => import('../components/ThreeScene'));
 
 export default function Home() {
     return (
         <div>
             <Chatbot />
-            <ThreeScene />
+            <Suspense fallback={<div>Loading 3D scene...</div>}>
+                <ThreeScene />
+            </Suspense>
         </div>
     );
 }

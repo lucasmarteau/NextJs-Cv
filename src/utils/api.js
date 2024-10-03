@@ -1,18 +1,24 @@
-// src/utils/api.js
+import { API_ENDPOINT } from './constants';
 
 export const fetchChatResponse = async (query) => {
-    const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-    });
+    try {
+        const response = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query }),
+        });
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch response from API');
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData?.error || 'Failed to fetch response from API');
+        }
+
+        const data = await response.json();
+        return data.result;
+    } catch (error) {
+        console.error('API error:', error);
+        throw new Error('Error fetching response');
     }
-
-    const data = await response.json();
-    return data.result;
 };
