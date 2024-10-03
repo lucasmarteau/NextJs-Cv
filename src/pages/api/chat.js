@@ -1,3 +1,7 @@
+import { HfInference } from "@huggingface/inference";
+
+const inference = new HfInference("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"); // Remplace par ta clé API
+
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { query } = req.body;
@@ -7,23 +11,20 @@ export default async function handler(req, res) {
         }
 
         try {
-            const response = await fetch('https://api-inference.huggingface.co/models/distilgpt2', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ inputs: query }),
+            const response = inference.chatCompletionStream({
+                model: "mistralai/Mistral-Nemo-Instruct-2407",
+                messages: [{ role: "user", content: query }],
+                max_tokens: 500,
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`API Error: ${errorData.error || 'Unknown error'}`);
+            const chunks = [];
+            for await (const chunk of response) {
+                chunks.push(chunk.choices[0]?.delta?.content || "");
             }
 
-            const data = await response.json();
-            console.log('Réponse de l\'API:', data); // Pour déboguer
-            res.status(200).json({ result: data.generated_text || 'Aucune réponse' });
+            const generatedText = chunks.join('');
+            console.log('Réponse de l\'API:', generatedText); // Pour déboguer
+            res.status(200).json({ result: generatedText || 'Aucune réponse' }); // Renvoie le texte généré
         } catch (error) {
             console.error('API call error:', error);
             res.status(500).json({ error: error.message });

@@ -41,8 +41,11 @@ export default function Chatbot() {
                 const assistantMessage = { role: 'assistant', content: assistantMessageContent };
                 setMessages((prevMessages) => [...prevMessages, assistantMessage]);
             } else {
-                const errorMessage = { role: 'assistant', content: "Désolé, je n'ai pas compris la réponse." };
-                setMessages((prevMessages) => [...prevMessages, errorMessage]);
+                // Réessayer avec une question reformulée
+                const reformulatedMessage = "Peux-tu me dire combien font 1 + 1 ?";
+                const newAssistantMessageContent = await fetchChatResponse(reformulatedMessage);
+                const newAssistantMessage = { role: 'assistant', content: newAssistantMessageContent || "Désolé, je n'ai toujours pas compris." };
+                setMessages((prevMessages) => [...prevMessages, newAssistantMessage]);
             }
         } catch (error) {
             console.error('Error during API call:', error);
