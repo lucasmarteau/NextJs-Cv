@@ -1,38 +1,64 @@
+/* 3D Scene as Background */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative; /* Ensure background covers entire screen */
 }
 
+/* Chatbot Styling */
 .chat-container {
-    width: 90%;
-    max-width: 600px;
-    margin: 20px auto;
+    position: absolute;
+    bottom: 2vh; /* Adjusted to vh */
+    right: 2vw; /* Adjusted to vw */
+    width: 30vw; /* Adjusted to vw */
+    height: 50vh;
+    max-width: 90%; /* Adjusted to percentage */
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    border-radius: 1vw; /* Adjusted to vw for consistency */
+    box-shadow: 0 0.2vh 1vh rgba(0, 0, 0, 0.1); /* Adjusted shadow values */
+    padding: 2vh; /* Adjusted to vh */
+    z-index: 1; /* Ensures it's above the 3D background */
+
+    background-color: darkgrey;
 }
 
 .messages {
-    max-height: 400px;
+    max-height: 30vh; /* Adjusted to vh */
     overflow-y: auto;
-    margin-bottom: 20px;
+    margin-bottom: 2vh; /* Adjusted to vh */
 }
 
 .chat-bubble {
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    max-width: 75%;
+    padding: 1vh; /* Adjusted to vh */
+    margin: 0.5vh 0;
+    border-radius: 1vh; /* Adjusted to vh */
+    max-width: 75%; /* Kept percentage for width */
 }
 
 .chat-bubble.user {
-    background-color: #d1e7dd; /* Vert clair pour les messages de l'utilisateur */
-    align-self: flex-end; /* Aligner les messages de l'utilisateur à droite */
+    background-color: #d1e7dd;
+    align-self: flex-end;
 }
 
 .chat-bubble.assistant {
-    background-color: #f8d7da; /* Rouge clair pour les messages de l'assistant */
-    align-self: flex-start; /* Aligner les messages de l'assistant à gauche */
+    background-color: #f8d7da;
+    align-self: flex-start;
+}
+
+/* Optimized Scroll for Overflow */
+html, body {
+    overflow: hidden;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: -1; /* Ensure canvas is behind everything */
 }
