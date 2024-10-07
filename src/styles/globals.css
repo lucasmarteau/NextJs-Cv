@@ -9,50 +9,122 @@ body {
     position: relative; /* Ensure background covers entire screen */
 }
 
-/* Chatbot Styling */
+/* Chatbot Container */
 .chat-container {
     position: absolute;
-    bottom: 2vh; /* Adjusted to vh */
-    right: 2vw; /* Adjusted to vw */
-    width: 30vw; /* Adjusted to vw */
-    height: 50vh;
-    max-width: 90%; /* Adjusted to percentage */
-    background: white;
-    border-radius: 1vw; /* Adjusted to vw for consistency */
-    box-shadow: 0 0.2vh 1vh rgba(0, 0, 0, 0.1); /* Adjusted shadow values */
-    padding: 2vh; /* Adjusted to vh */
-    z-index: 1; /* Ensures it's above the 3D background */
-
-    background-color: darkgrey;
+    bottom: 2vh;
+    right: 2vw;
+    width: 30vw;
+    height: 60vh;
+    max-width: 90%;
+    background-color: rgba(52, 58, 64, 0.85); /* Semi-transparent dark background */
+    border-radius: 1vw;
+    padding: 2vh;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
 }
 
+/* Messages Scrollable Area */
 .messages {
-    max-height: 30vh; /* Adjusted to vh */
+    flex-grow: 1;
+    max-height: 50vh;
     overflow-y: auto;
-    margin-bottom: 2vh; /* Adjusted to vh */
+    margin-bottom: 2vh;
+    padding-right: 1vw; /* Padding to avoid scrollbar overlap */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between chat bubbles */
 }
 
+/* Chat Bubbles */
 .chat-bubble {
-    padding: 1vh; /* Adjusted to vh */
+    padding: 1vh 2vw;
     margin: 0.5vh 0;
-    border-radius: 1vh; /* Adjusted to vh */
-    max-width: 75%; /* Kept percentage for width */
+    border-radius: 1vh;
+    max-width: 75%;
+    word-wrap: break-word;
+    opacity: 0.9; /* Slight opacity for a modern look */
+    transition: opacity 0.3s ease;
+    text-align: left;
 }
 
+.chat-bubble:hover {
+    opacity: 1; /* Full opacity on hover */
+}
+
+/* User Chat Bubble (Right) */
 .chat-bubble.user {
-    background-color: #d1e7dd;
+    background-color: rgba(209, 231, 221, 100); /* Semi-transparent light green */
     align-self: flex-end;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+/* Assistant Chat Bubble (Left) */
 .chat-bubble.assistant {
-    background-color: #f8d7da;
+    background-color: rgba(248, 215, 218, 100); /* Semi-transparent light red */
     align-self: flex-start;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Optimized Scroll for Overflow */
-html, body {
-    overflow: hidden;
+/* Input Form Positioned at the Bottom */
+.input-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(247, 247, 247, 0.9);
+    width: 97%;
 }
+
+/* Input Textarea */
+.input-form textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: none;
+    transition: border-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent input */
+}
+
+/* Textarea Focus State */
+.input-form textarea:focus {
+    border-color: #4caf50;
+    outline: none;
+}
+
+/* Submit Button Styling */
+.input-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #4caf50;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Disabled Button State */
+.input-form button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Hover State for Enabled Button */
+.input-form button:not(:disabled):hover {
+    background-color: #45a049;
+}
+
+
+
+
 
 canvas {
     position: absolute;
