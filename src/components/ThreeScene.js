@@ -19,7 +19,7 @@ export default function ThreeScene() {
 
         // Lumière directionnelle avec ombres douces
         const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight2.position.set(-10, -10, -10);
+        directionalLight2.position.set(-10, -10, 0);
         scene.add(directionalLight2);
 
         // Chargement du modèle 3D

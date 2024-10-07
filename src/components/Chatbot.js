@@ -6,6 +6,7 @@ export default function Chatbot() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Fonction pour récupérer la réponse du modèle
     const fetchChatResponse = useCallback(async (query) => {
         setLoading(true);
         try {
@@ -14,7 +15,7 @@ export default function Chatbot() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ query }),
+                body: JSON.stringify({ messages: query }),  // Envoyer l'historique complet
             });
 
             if (!response.ok) {
@@ -32,12 +33,14 @@ export default function Chatbot() {
         }
     }, []);
 
+    // Ajouter un message au tableau de messages
     const addMessage = useCallback((role, content) => {
         if (content?.trim()) {
             setMessages((prevMessages) => [...prevMessages, { role, content }]);
         }
     }, []);
 
+    // Gestion de l'envoi des messages
     const handleSubmit = useCallback(async (event) => {
         event.preventDefault();
 
@@ -48,22 +51,23 @@ export default function Chatbot() {
         addMessage('user', trimmedInput);
         setInput('');
 
-        // Récupérer la réponse de l'assistant
-        let assistantMessageContent = await fetchChatResponse(trimmedInput);
+        // Récupérer la réponse de l'assistant avec l'historique complet
+        let assistantMessageContent = await fetchChatResponse([...messages, { role: 'user', content: trimmedInput }]);
 
         // Si la réponse est vide, reformuler la question
         if (!assistantMessageContent?.trim()) {
             const reformulatedMessage = "Peux-tu me dire combien font 1 + 1 ?";
-            assistantMessageContent = await fetchChatResponse(reformulatedMessage);
+            assistantMessageContent = await fetchChatResponse([...messages, { role: 'user', content: reformulatedMessage }]);
         }
 
-        // Ajouter le message de l'assistant
+        // Ajouter la réponse de l'assistant
         addMessage('assistant', assistantMessageContent || "Désolé, je n'ai toujours pas compris.");
-    }, [input, fetchChatResponse, addMessage]);
+    }, [input, messages, fetchChatResponse, addMessage]);
 
     return (
         <div className="chat-container">
             <div className="messages">
+                <p className="chat-bubble assistant">Je suis un ChatBot pour donner des informations sur Lucas.</p>
                 {messages.map((msg, index) => (
                     <ChatBubble key={index} message={msg.content} role={msg.role} />
                 ))}

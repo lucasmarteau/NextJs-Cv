@@ -2,6 +2,7 @@ import { HfInference } from "@huggingface/inference";
 
 const inference = new HfInference("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");
 
+// Contexte sur Lucas Marteau
 const CONTEXT = `
 Tu es l'assistant de Lucas Marteau, un étudiant en troisième année de développement informatique à Sup De Vinci. Tu vas répondre aux questions des utilisateurs en utilisant les informations suivantes, mais tu pourras également proposer des détails pertinents sur lui si cela peut être utile à la discussion.
 
@@ -41,26 +42,31 @@ Coordonnées :
 Certifications :
 - RGPD CNIL
 
-Tu peux aussi mentionner que Lucas est dynamique, motivé, et toujours prêt à apprendre de nouvelles compétences, notamment en développement logiciel et dans les domaines techniques qui l'intéressent.`;
-
+Tu peux aussi mentionner que Lucas est dynamique, motivé, et toujours prêt à apprendre de nouvelles compétences, notamment en développement logiciel et dans les domaines techniques qui l'intéressent.
+`;
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.setHeader('Allow', ['POST']).status(405).end(`Method ${req.method} Not Allowed`);
     }
 
-    const { query } = req.body;
+    const { messages } = req.body; // Recevoir l'historique des messages
 
-    if (!query) {
-        return res.status(400).json({ error: 'Query is required' });
+    if (!messages || !messages.length) {
+        return res.status(400).json({ error: 'Messages are required' });
     }
 
     try {
-        const messageWithContext = CONTEXT + " " + query;
+        // Créer le contexte à envoyer avec l'historique
+        const fullMessages = [
+            { role: 'system', content: CONTEXT },  // Ajouter le contexte comme message "system"
+            ...messages  // Ajouter l'historique de la conversation
+        ];
 
+        // Transmettre tout l'historique et le contexte au modèle
         const response = inference.chatCompletionStream({
             model: "mistralai/Mistral-Nemo-Instruct-2407",
-            messages: [{ role: "user", content: messageWithContext }],
+            messages: fullMessages,  // Envoyer le contexte et l'historique
             max_tokens: 500,
         });
 
