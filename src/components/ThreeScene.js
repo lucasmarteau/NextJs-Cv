@@ -35,8 +35,8 @@ export default function ThreeScene() {
         });
 
         // Positionnement de la caméra
-        camera.position.set(0, 0, 207);  // Place la caméra à une distance de 500 unités sur l'axe Z
-        camera.lookAt(0, 0, 0); // Oriente la caméra vers l'origine, où se trouve le modèle (l'écran)
+        camera.position.set(-10, 50, 90);  // Place la caméra à une distance de 500 unités sur l'axe Z
+        camera.lookAt(0, 40, -100); // Oriente la caméra vers l'origine, où se trouve le modèle (l'écran)
 
         // Animation de la scène
         const animate = function () {
