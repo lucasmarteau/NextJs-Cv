@@ -4,30 +4,35 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function ThreeScene() {
     useEffect(() => {
-        // Scène, caméra, et rendu
+        // Initialisation de la scène, de la caméra et du rendu
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+        // Configuration du renderer
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
-        // Lumière directionnelle avec ombres douces
-        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight1.position.set(10, 10, 10);
-        scene.add(directionalLight1);
+        // Ajout de lumières
+        const colors = [0xFFFFFF, 0xFFFFFF]; // Couleurs des lumières
+        const positions = [
+            [10, 10, 10],
+            [-10, -10, -10],
+        ];
 
-        // Lumière directionnelle avec ombres douces
-        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight2.position.set(-10, -10, 0);
-        scene.add(directionalLight2);
+        colors.forEach((color, index) => {
+            const light = new THREE.DirectionalLight(color, 2.5);
+            light.position.set(...positions[index]);
+            scene.add(light);
+        });
 
         // Chargement du modèle 3D
         const loader = new GLTFLoader();
         loader.load('/model.glb', (gltf) => {
             const model = gltf.scene;
-            model.position.set(0, 0, 0);  // Position initiale du modèle
-            model.scale.set(1, 1, 1);     // Taille du modèle
+            model.position.set(0, 0, 0);
+            model.scale.set(1, 1, 1);
             model.castShadow = true;
             scene.add(model);
         }, undefined, (error) => {
@@ -35,21 +40,20 @@ export default function ThreeScene() {
         });
 
         // Positionnement de la caméra
-        camera.position.set(-10, 50, 90);  // Place la caméra à une distance de 500 unités sur l'axe Z
-        camera.lookAt(0, 40, -100); // Oriente la caméra vers l'origine, où se trouve le modèle (l'écran)
+        camera.position.set(0, 50, 90);
+        camera.lookAt(0, 50, 0);
 
         // Animation de la scène
-        const animate = function () {
+        const animate = () => {
             requestAnimationFrame(animate);
-
             renderer.render(scene, camera);
         };
-
         animate();
 
         // Nettoyage
         return () => {
             document.body.removeChild(renderer.domElement);
+            renderer.dispose(); // Libère les ressources du renderer
         };
     }, []);
 
